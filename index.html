@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Generar .add.WIP desde una carpeta de archivos PDF</title>
+  <title>Generar .add.WIP desde carpeta PDF</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 2em; }
     button { padding: 0.5em 1em; font-size: 1em; }
@@ -13,12 +13,9 @@
 <body>
   <h1>Generar archivo .add.WIP desde una carpeta de archivos PDF</h1>
 
-  <p>Selecciona una carpeta que contenga archivos PDF con el nombre esperado (ej: 20250115_LAN572_SCL-BOG_ECNBN_SALAS_DOCUMENTO.pdf).</p>
+  <p>Selecciona una carpeta que contenga archivos PDF con nombre esperado.</p>
 
   <input type="file" id="folderInput" webkitdirectory directory multiple />
-  <br/>
-  <label for="nombreCarpeta">Nombre de carpeta:</label>
-  <input type="text" id="nombreCarpeta" placeholder="Ejemplo: Carpeta1" />
   <br/>
   <button onclick="procesarArchivos()">Generar Archivo</button>
 
@@ -26,16 +23,17 @@
     function procesarArchivos() {
       const input = document.getElementById('folderInput');
       const files = input.files;
-      const nombreCarpetaInput = document.getElementById('nombreCarpeta').value.trim();
 
       if (!files.length) {
         alert('Selecciona una carpeta que contenga archivos PDF');
         return;
       }
-      if (!nombreCarpetaInput) {
-        alert('Escribe el nombre de la carpeta');
-        return;
-      }
+
+      // Extraemos el nombre de la carpeta automáticamente
+      const primerArchivo = files[0];
+      const rutaRelativa = primerArchivo.webkitRelativePath; // ej: "Carpeta1/archivo.pdf"
+      const nombreCarpeta = rutaRelativa.split('/')[0]; // toma "Carpeta1"
+      console.log("Nombre carpeta detectado:", nombreCarpeta);
 
       const campos_fijos = {
         campo_1: '"ME598"',
@@ -43,7 +41,6 @@
         campo_3: '"595801"'
       };
 
-      const nombre_carpeta = nombreCarpetaInput;
       let datos = [];
 
       for (const file of files) {
@@ -55,7 +52,7 @@
         if (partes.length >= 6) {
           const fila = [
             campos_fijos.campo_1,
-            `"${nombre_carpeta}"`,
+            `"${nombreCarpeta}"`,
             '""',
             campos_fijos.campo_2,
             campos_fijos.campo_3,
