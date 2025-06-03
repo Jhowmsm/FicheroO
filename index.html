@@ -3,37 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Generar .add.WIP desde carpeta PDF</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 2em; }
-    button { padding: 0.5em 1em; font-size: 1em; }
-    input { margin-bottom: 1em; }
-  </style>
+  <title>Generar .add.WIP desde una carpeta de archivos PDF</title>
+  <!-- Aquí enlazamos el CSS externo -->
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>Generar archivo .add.WIP desde una carpeta de archivos PDF</h1>
+  <div class="container">
+    <h1>Generar archivo .add.WIP desde una carpeta de archivos PDF</h1>
 
-  <p>Selecciona una carpeta que contenga archivos PDF con nombre esperado.</p>
+    <p>Selecciona una carpeta que contenga archivos PDF con el nombre esperado (ej: 20250115_LAN572_SCL-BOG_ECNBN_SALAS_DOCUMENTO.pdf).</p>
 
-  <input type="file" id="folderInput" webkitdirectory directory multiple />
-  <br/>
-  <button onclick="procesarArchivos()">Generar Archivo</button>
+    <label for="folderInput">Seleccionar carpeta:</label>
+    <input type="file" id="folderInput" webkitdirectory directory multiple />
+
+    <label for="nombreCarpeta">Nombre de carpeta (se detectará automáticamente):</label>
+    <input type="text" id="nombreCarpeta" placeholder="Ejemplo: Carpeta1" readonly />
+
+    <button onclick="procesarYGuardar()">Generar y guardar archivo</button>
+
+    <div id="alerta" class="alert"></div>
+  </div>
 
   <script>
-    function procesarArchivos() {
-      const input = document.getElementById('folderInput');
-      const files = input.files;
+    const folderInput = document.getElementById('folderInput');
+    const nombreCarpetaInput = document.getElementById('nombreCarpeta');
+    const alertaDiv = document.getElementById('alerta');
+
+    folderInput.addEventListener('change', () => {
+      alertaDiv.style.display = 'none';
+      const files = folderInput.files;
+      if (files.length) {
+        const rutaRelativa = files[0].webkitRelativePath;
+        const nombreCarpeta = rutaRelativa.split('/')[0];
+        nombreCarpetaInput.value = nombreCarpeta;
+      } else {
+        nombreCarpetaInput.value = '';
+      }
+    });
+
+    async function procesarYGuardar() {
+      alertaDiv.style.display = 'none';
+      const files = folderInput.files;
 
       if (!files.length) {
-        alert('Selecciona una carpeta que contenga archivos PDF');
+        mostrarAlerta('Selecciona una carpeta que contenga archivos PDF');
         return;
       }
 
-      // Extraemos el nombre de la carpeta automáticamente
-      const primerArchivo = files[0];
-      const rutaRelativa = primerArchivo.webkitRelativePath; // ej: "Carpeta1/archivo.pdf"
-      const nombreCarpeta = rutaRelativa.split('/')[0]; // toma "Carpeta1"
-      console.log("Nombre carpeta detectado:", nombreCarpeta);
+      const nombreCarpeta = nombreCarpetaInput.value.trim();
+      if (!nombreCarpeta) {
+        mostrarAlerta('No se pudo detectar el nombre de la carpeta');
+        return;
+      }
 
       const campos_fijos = {
         campo_1: '"ME598"',
@@ -77,7 +98,7 @@
       }
 
       if (datos.length === 0) {
-        alert("No se encontraron archivos PDF válidos en la carpeta.");
+        mostrarAlerta("No se encontraron archivos PDF válidos en la carpeta.");
         return;
       }
 
@@ -88,15 +109,30 @@
       const nombreArchivo = `ME-ME-FILE-${fecha}_${hora}.add.WIP`;
       const contenido = datos.join("\n");
 
-      const blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
+      try {
+        await guardarEnCarpetaSKP(nombreArchivo, contenido);
+      } catch (err) {
+        mostrarAlerta('Error guardando archivo: ' + err.message);
+      }
+    }
 
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = nombreArchivo;
-      a.click();
+    function mostrarAlerta(mensaje) {
+      alertaDiv.textContent = mensaje;
+      alertaDiv.style.display = 'block';
+    }
 
-      URL.revokeObjectURL(url);
+    async function guardarEnCarpetaSKP(nombreArchivo, contenido) {
+      const rootHandle = await window.showDirectoryPicker();
+
+      const skpHandle = await rootHandle.getDirectoryHandle('SKP', { create: true });
+
+      const fileHandle = await skpHandle.getFileHandle(nombreArchivo, { create: true });
+
+      const writable = await fileHandle.createWritable();
+      await writable.write(contenido);
+      await writable.close();
+
+      alert('Archivo guardado en carpeta SKP dentro de la carpeta seleccionada.');
     }
   </script>
 </body>
