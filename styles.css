@@ -24,7 +24,7 @@
   width: 100%;
 }
 .image-wrapper img {
-  max-width: 300px; /* tamaño máximo de la imagen */
+  max-width: 200px; /* tamaño máximo de la imagen */
   height: auto;
   border-radius: 12px;
   box-shadow: 0 10px 20px rgba(0,0,0,0.15);
