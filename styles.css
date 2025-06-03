@@ -86,7 +86,7 @@ button:hover {
 
 /* Imagen decorativa */
 .image-wrapper {
-  max-width: 400px;
+  max-width: 500px;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
