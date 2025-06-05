@@ -21,6 +21,7 @@
 
       <div class="form-controls">
         <input type="file" id="folderInput" webkitdirectory directory multiple />
+        <input type="text" id="nombreCarpeta" placeholder="200XXXXXXX" />
         <button onclick="procesarArchivos()">Generar Archivo</button>
       </div>
     </div>
@@ -34,8 +35,8 @@
     function procesarArchivos() {
   const input = document.getElementById('folderInput');
   const files = input.files;
+  const nombreeCarpeta = document.getElementById('nombreCarpeta').value.trim();
 
-  const nombreeCarpeta = prompt('Ingresa el nombre de la carpeta (ejemplo: 200XXXXXXX):');
   if (!nombreCarpeta) {
     alert('Debes ingresar un nombre de carpeta.');
     return;
