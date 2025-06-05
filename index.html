@@ -40,6 +40,13 @@
     return;
   }
 
+  const nombreCarpeta = prompt('Ingresa el nombre de la carpeta (ejemplo: 200XXXXXXX):');
+  
+  if (!nombreCarpeta){
+    alert('Debes ingresar un nombre de carpeta.');
+    return;
+  }
+
   const campos_fijos = {
     campo_1: '"ME598"',
     campo_2: '"59580"',
@@ -47,7 +54,7 @@
   };
 
   const rutaCompleta = files[0].webkitRelativePath;
-  const nombreCarpeta = rutaCompleta.split('/')[0];
+
 
   // Convertir FileList en un arreglo y ordenar por fecha de creación (de más antigua a más reciente)
   const archivosOrdenados = Array.from(files)
