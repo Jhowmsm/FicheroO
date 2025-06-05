@@ -35,17 +35,17 @@
   const input = document.getElementById('folderInput');
   const files = input.files;
 
+  const nombreeCarpeta = prompt('Ingresa el nombre de la carpeta (ejemplo: 200XXXXXXX):');
+  if (!nombreCarpeta) {
+    alert('Debes ingresar un nombre de carpeta.');
+    return;
+  }
+
   if (!files.length) {
     alert('Selecciona una carpeta que contenga archivos PDF');
     return;
   }
-
-  const nombreCarpeta = prompt('Ingresa el nombre de la carpeta (ejemplo: 200XXXXXXX):');
   
-  if (!nombreCarpeta){
-    alert('Debes ingresar un nombre de carpeta.');
-    return;
-  }
 
   const campos_fijos = {
     campo_1: '"ME598"',
@@ -54,7 +54,7 @@
   };
 
   const rutaCompleta = files[0].webkitRelativePath;
-
+  const nombreCarpeta = rutaCompleta.split('/')[0];
 
   // Convertir FileList en un arreglo y ordenar por fecha de creación (de más antigua a más reciente)
   const archivosOrdenados = Array.from(files)
@@ -70,7 +70,7 @@
     if (partes.length >= 6) {
       const fila = [
         campos_fijos.campo_1,
-        `"${nombreCarpeta}"`,
+        `"${nombreeCarpeta}"`,
         '""',
         campos_fijos.campo_2,
         campos_fijos.campo_3,
