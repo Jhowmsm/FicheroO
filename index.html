@@ -32,79 +32,82 @@
 
   <script>
     function procesarArchivos() {
-      const input = document.getElementById('folderInput');
-      const files = input.files;
+  const input = document.getElementById('folderInput');
+  const files = input.files;
 
-      if (!files.length) {
-        alert('Selecciona una carpeta que contenga archivos PDF');
-        return;
-      }
+  if (!files.length) {
+    alert('Selecciona una carpeta que contenga archivos PDF');
+    return;
+  }
 
-      const campos_fijos = {
-        campo_1: '"ME598"',
-        campo_2: '"59580"',
-        campo_3: '"595801"'
-      };
+  const campos_fijos = {
+    campo_1: '"ME598"',
+    campo_2: '"59580"',
+    campo_3: '"595801"'
+  };
 
-      const rutaCompleta = files[0].webkitRelativePath;
-      const nombreCarpeta = rutaCompleta.split('/')[0];
+  const rutaCompleta = files[0].webkitRelativePath;
+  const nombreCarpeta = rutaCompleta.split('/')[0];
 
-      let datos = [];
+  // Convertir FileList en un arreglo y ordenar por fecha de creación (de más antigua a más reciente)
+  const archivosOrdenados = Array.from(files)
+    .filter(file => file.name.toLowerCase().endsWith('.pdf'))
+    .sort((a, b) => a.lastModified - b.lastModified);
 
-      for (const file of files) {
-        if (!file.name.toLowerCase().endsWith('.pdf')) continue;
+  let datos = [];
 
-        const nombre = file.name.replace(/\.[^/.]+$/, "");
-        const partes = nombre.split("_");
+  for (const file of archivosOrdenados) {
+    const nombre = file.name.replace(/\.[^/.]+$/, "");
+    const partes = nombre.split("_");
 
-        if (partes.length >= 6) {
-          const fila = [
-            campos_fijos.campo_1,
-            `"${nombreCarpeta}"`,
-            '""',
-            campos_fijos.campo_2,
-            campos_fijos.campo_3,
-            '""',
-            '""',
-            `"${partes[1]}"`,
-            `"${partes[2]}"`,
-            '""',
-            `"${partes[5]}"`,
-            '""',
-            '""',
-            '""',
-            `"${partes[3]}"`,
-            `"${partes[4]}"`,
-            '""',
-            '""',
-            '""',
-            '""'
-          ];
-          datos.push(fila.join(" "));
-        }
-      }
-
-      if (datos.length === 0) {
-        alert("No se encontraron archivos PDF válidos en la carpeta.");
-        return;
-      }
-
-      const ahora = new Date();
-      const fecha = ahora.toLocaleDateString('en-US', { year: '2-digit', month: '2-digit', day: '2-digit' }).replace(/\//g, '');
-      const hora = ahora.toTimeString().slice(0, 8).replace(/:/g, '');
-      const nombreArchivo = `ME-ME-FILE-${fecha}_${hora}.add.WIP`;
-
-      const contenido = datos.join("\n");
-      const blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${nombreArchivo}`;
-      a.click();
-
-      URL.revokeObjectURL(url);
+    if (partes.length >= 6) {
+      const fila = [
+        campos_fijos.campo_1,
+        `"${nombreCarpeta}"`,
+        '""',
+        campos_fijos.campo_2,
+        campos_fijos.campo_3,
+        '""',
+        '""',
+        `"${partes[1]}"`,
+        `"${partes[2]}"`,
+        '""',
+        `"${partes[5]}"`,
+        '""',
+        '""',
+        '""',
+        `"${partes[3]}"`,
+        `"${partes[4]}"`,
+        '""',
+        '""',
+        '""',
+        '""'
+      ];
+      datos.push(fila.join(" "));
     }
+  }
+
+  if (datos.length === 0) {
+    alert("No se encontraron archivos PDF válidos en la carpeta.");
+    return;
+  }
+
+  const ahora = new Date();
+  const fecha = ahora.toLocaleDateString('en-GB', { year: '2-digit', month: '2-digit', day: '2-digit' }).replace(/\//g, '');
+  const hora = ahora.toTimeString().slice(0, 8).replace(/:/g, '');
+  const nombreArchivo = `ME-ME-FILE-${fecha}_${hora}.add.WIP`;
+
+  const contenido = datos.join("\n");
+  const blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${nombreArchivo}`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
   </script>
 </body>
 </html>
