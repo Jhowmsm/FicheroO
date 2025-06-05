@@ -22,7 +22,7 @@ def procesar_archivos(ruta, nombre_carpeta, campos_fijos):
             if len(partes) >= 6:
                 fila = [
                     campos_fijos["campo_1"],         # '"ME598"'
-                    f'"{nombre_carpeta}"',           # carpeta con comillas
+                    f'"{nombre_carpeta}"',           # este valor se mete manualmente (normalmente estos PDF se encuentran dos niveles adelante del número de la caja que necesitamos)
                     '""',
                     campos_fijos["campo_2"],         # '"59580"'
                     campos_fijos["campo_3"],         # '"595801"'

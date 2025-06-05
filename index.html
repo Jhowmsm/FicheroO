@@ -7,115 +7,127 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="main-wrapper">
-    <div class="container">
-      <h1>Generar archivo .add.WIP </h1>
-      
-      <p class="description">
-        El siguiente ejemplo de ejecución es en base a la imagen de la derecha <br><br>
-        Los archivos PDF deben moverse a la carpeta <code>200XXXXXXX</code> como se muestra en la imagen <br>
-        Seleccionamos la carpeta donde acabamos de mover los archivos PDF cuyos nombres tienen el siguiente formato:<br>
-        <code>20XXXXXX_LXXXXX_SXX-BXX_EXXXXX_SXXXX_DXXXXXXXX.pdf</code><br><br>
-        Click en Generar Archivo y el sistema generará automáticamente un archivo <strong>.add.WIP</strong> con los datos extraídos. El archivo se guardará automaticamente en la carpeta de <strong>Descargas</strong> de allí debemos moverlo a la carpeta deseada.
-      </p>
+ <div class="main-wrapper">
+  <div class="container">
+    <h1>Generar archivo .add.WIP</h1>
+    <p class="description">
+      El siguiente ejemplo de ejecución es en base a la imagen de la derecha.<br>
+      <b>-</b> El número de la caja <code>200XXXXXXX</code> se obtiene de la ruta de los PDF.<br>
+      - Selecciona la carpeta donde tenemos los archivos PDF cuyos nombres tienen el siguiente formato:
+      <code>20XXXXXX_LXXXXX_SXX-BXX_EXXXXX_SXXXX_DXXXXXXXX.pdf</code><br>
+      - Click en Generar Archivo y el sistema generará automáticamente un archivo <strong>.add.WIP</strong> con los datos extraídos.<br>
+      - Cortar o copiar el archivo a la ruta deseada.<br><br>
+      Nota: Antes de generar el archivo asegurese que la carpeta donde están los PDF este organizada por fecha de modificación fecha/hora más antigua primero.
+    </p>
 
-      <div class="form-controls">
+    <div class="form-controls">
+      <div class="form-group">
+        <label for="nombreCarpetaInput">Ingrese el nombre de la carpeta:</label>
+        <input type="text" id="nombreCarpetaInput" placeholder="Ejemplo: 200XXXXXXX" />
+      </div>
+
+      <div class="form-group">
+        <label for="folderInput">Seleccione la carpeta:</label>
         <input type="file" id="folderInput" webkitdirectory directory multiple />
+      </div>
+
+      <div class="form-group">
         <button onclick="procesarArchivos()">Generar Archivo</button>
       </div>
     </div>
-
-    <div class="image-wrapper">
-      <img src="FICHERO.png" alt="Imagen decorativa" />
-    </div>
   </div>
 
-  <script>
+  <div class="image-wrapper">
+    <img src="FICHERO.png" alt="Imagen decorativa" />
+  </div>
+</div>
+
+
+<script>
   function procesarArchivos() {
-    const input = document.getElementById('folderInput');
-    const files = input.files;
+  const input = document.getElementById('folderInput');
+  const files = input.files;
+  const nombreCarpeta = document.getElementById('nombreCarpetaInput').value.trim();
 
-    const nombreCarpeta = prompt('Ingresa el nombre de la carpeta (ejemplo: 200XXXXXXX):');
-    if (!nombreCarpeta) {
-      alert('Debes ingresar un nombre de carpeta.');
-      return;
-    }
-
-    if (!files.length) {
-      alert('Selecciona una carpeta que contenga archivos PDF');
-      return;
-    }
-
-    const campos_fijos = {
-      campo_1: '"ME598"',
-      campo_2: '"59580"',
-      campo_3: '"595801"'
-    };
-
-    // Convertir FileList en un arreglo y ordenar por fecha de modificación
-    const archivosOrdenados = Array.from(files)
-      .filter(file => file.name.toLowerCase().endsWith('.pdf'))
-      .sort((a, b) => a.lastModified - b.lastModified);
-
-    let datos = [];
-
-    for (const file of archivosOrdenados) {
-      const nombre = file.name.replace(/\.[^/.]+$/, "");
-      const partes = nombre.split("_");
-
-      if (partes.length >= 6) {
-        const fila = [
-          campos_fijos.campo_1,
-          `"${nombreCarpeta}"`,
-          '""',
-          campos_fijos.campo_2,
-          campos_fijos.campo_3,
-          '""',
-          '""',
-          `"${partes[1]}"`,
-          `"${partes[2]}"`,
-          '""',
-          `"${partes[5]}"`,
-          '""',
-          '""',
-          '""',
-          `"${partes[3]}"`,
-          `"${partes[4]}"`,
-          '""',
-          '""',
-          '""',
-          '""'
-        ];
-        datos.push(fila.join(" "));
-      }
-    }
-
-    if (datos.length === 0) {
-      alert("No se encontraron archivos PDF válidos en la carpeta.");
-      return;
-    }
-
-    const ahora = new Date();
-    const fecha = ahora.toLocaleDateString('en-GB', { year: '2-digit', month: '2-digit', day: '2-digit' }).replace(/\//g, '');
-    const hora = ahora.toTimeString().slice(0, 8).replace(/:/g, '');
-    const nombreArchivo = `ME-ME-FILE-${fecha}_${hora}.add.WIP`;
-
-    const contenido = datos.join("\n");
-    const blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = nombreArchivo;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    // Retrasar la revocación del objeto URL para asegurar que la descarga se inicie
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-    }, 100);
+  if (!nombreCarpeta) {
+    alert('Debes ingresar un nombre de carpeta.');
+    return;
   }
+
+  if (!files.length) {
+    alert('Selecciona una carpeta que contenga archivos PDF');
+    return;
+  }
+
+  const campos_fijos = {
+    campo_1: '"ME598"',
+    campo_2: '"59580"',
+    campo_3: '"595801"'
+  };
+
+  const archivosOrdenados = Array.from(files)
+    .filter(file => file.name.toLowerCase().endsWith('.pdf'))
+    .sort((a, b) => a.lastModified - b.lastModified);
+
+  let datos = [];
+
+  for (const file of archivosOrdenados) {
+    const nombre = file.name.replace(/\.[^/.]+$/, "");
+    const partes = nombre.split("_");
+
+    if (partes.length >= 6) {
+      const fila = [
+        campos_fijos.campo_1,
+        `"${nombreCarpeta}"`,
+        '""',
+        campos_fijos.campo_2,
+        campos_fijos.campo_3,
+        '""',
+        '""',
+        `"${partes[1]}"`,
+        `"${partes[2]}"`,
+        '""',
+        `"${partes[5]}"`,
+        '""',
+        '""',
+        '""',
+        `"${partes[3]}"`,
+        `"${partes[4]}"`,
+        '""',
+        '""',
+        '""',
+        '""'
+      ];
+      datos.push(fila.join(" "));
+    }
+  }
+
+  if (datos.length === 0) {
+    alert("No se encontraron archivos PDF válidos en la carpeta.");
+    return;
+  }
+
+  const ahora = new Date();
+  const fecha = ahora.toLocaleDateString('en-GB', { year: '2-digit', month: '2-digit', day: '2-digit' }).replace(/\//g, '');
+  const hora = ahora.toTimeString().slice(0, 8).replace(/:/g, '');
+  const nombreArchivo = `ME-ME-FILE-${fecha}_${hora}.add.WIP`;
+
+  const contenido = datos.join("\n");
+  const blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nombreArchivo;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 100);
+}
+
 </script>
 
 </body>

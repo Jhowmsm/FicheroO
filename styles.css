@@ -1,17 +1,3 @@
-/* Reset y tipografía básica */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f5f7fa;
-  color: #333;
-  padding: 2em;
-}
-
 /* Contenedor principal */
 .main-wrapper {
   display: flex;
@@ -20,6 +6,9 @@ body {
   align-items: flex-start;
   justify-content: center;
   flex-wrap: wrap;
+  padding: 2em;
+  background: #f5f7fa;
+  color: #333;
 }
 
 /* Panel principal */
@@ -28,8 +17,8 @@ body {
   border-radius: 10px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   padding: 2em;
+  flex: 1 1 600px;
   max-width: 600px;
-  flex: 1;
 }
 
 .container h1 {
@@ -52,25 +41,35 @@ code {
   font-family: monospace;
 }
 
-/* Controles */
+/* Controles del formulario */
 .form-controls {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 1em;
-  align-items: center;
   margin-top: 1em;
 }
 
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
 
-input[type="file"] {
-  padding: 0.3em;
+.form-group label {
+  margin-bottom: 0.5em;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.form-group input[type="text"],
+.form-group input[type="file"] {
+  padding: 0.5em;
   font-size: 1em;
   border: 1px solid #ccc;
   border-radius: 6px;
   background-color: #fdfdfd;
 }
 
-button {
+.form-group button {
   background-color: #3498db;
   border: none;
   color: white;
@@ -81,21 +80,34 @@ button {
   transition: background-color 0.3s ease;
 }
 
-button:hover {
+.form-group button:hover {
   background-color: #2980b9;
 }
 
 /* Imagen decorativa */
 .image-wrapper {
-  max-width: 500px;
   flex: 0 0 auto;
+  max-width: 450px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: right;
+  justify-content: right;
 }
 
 .image-wrapper img {
   max-width: 100%;
   border-radius: 10px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .main-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container,
+  .image-wrapper {
+    max-width: 100%;
+  }
 }
