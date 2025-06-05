@@ -60,6 +60,13 @@ code {
   align-items: center;
   margin-top: 1em;
 }
+.button2{
+display: flex;
+  flex-direction: row;
+  gap: 1em;
+  align-items: center;
+  margin-top: 1em;
+}
 
 input[type="file"] {
   padding: 0.3em;
